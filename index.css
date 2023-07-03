@@ -1,0 +1,53 @@
+:root {
+    --my_car_h: 109px;
+    --my_car_w: 89px;
+    --my_car_t: 65%;
+
+    --car_1_h: 88px;
+    --car_1_w: 71px;
+    --car_1_t: 83%;
+    
+ } 
+
+
+.container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    overflow: hidden;
+    background-image: url('img/full\ lane\ \(light\).jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+.object {
+    position: absolute;
+}
+
+
+@media (max-width: 768px) {
+    .container {
+        padding-bottom: 75%;
+    }
+
+    .object {
+        transform: scale(0.7);
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding-bottom: 100%;
+    }
+
+    .object {
+        transform: scale(0.5);
+    }
+}
+.my_car{
+    top: 87%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    height: 150px;
+    width: 120px;
+}
