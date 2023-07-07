@@ -4,139 +4,151 @@ var left_lane = document.getElementById('leftLane');
 var left_lane_1 = document.getElementById('leftLane-1');
 var right_lane = document.getElementById('rightLane');
 var right_lane_1 = document.getElementById('rightLane-1');
+var left_line = document.getElementById('leftLine');
+var right_line = document.getElementById('rightLine');
 
 var midLaneIsExist = 0;
 var leftLaneIsExist = 0;
 var rightLaneIsExist = 0;
 
-const intervald = setInterval(test, 1000);
+//enum for object
+const car = 0;
+const truck = 1;
+const moto = 2;
+const human = 3;
+//add new for oject
 
-var carObject = {
+
+//enum for Dy
+const mid = 0;
+const left = 1;
+const right = 2;
+
+//enum for Lane Detection
+const none = 0;
+const blue = 1;
+const yellow = 2;
+const red = 3;
+const leftLine = 0;
+const rightLine = 1;
+//init size of object // the size at minmum distance
+const carHeight = 90; //car's height at minimum distance
+const carWidth = 94;  //car's width at minimum distance
+const truckHeight = 131;
+const truckWidth = 104;
+const motoHeight = 74;
+const motoWidth = 50;
+const humanHeight = 59;
+const humanWidth = 59;
+//add new for object size
+
+
+
+
+var CAMObject ={
     midLane:{
-        top: [64, 61, 58, 55, 52, 49, 46, 43, 40, 37],
-        left:50,
-        height:[91, 83, 76, 69, 62, 55, 48, 41, 34, 27],       
-        width:[91, 83, 76, 69, 62, 55, 48, 41, 34, 27],       //width = 0.9height
-        path: "/img/car-mid.png", //img path
- 
+        top: [74, 70, 66, 62, 58, 54, 50, 46, 42, 38], 
+        left:[50,50,50,50,50,50,50,50,50,50],
+        path:{
+            car: "/img/car-mid.png",
+            truck:"/img/truck-mid.png",
+            moto: "/img/moto-mid.png",
+            human: "img/human.png"
+            //add new object path
+        }
     },
     leftLane:{
-        top: [64, 61, 58, 55, 52, 49, 46, 43, 40, 37],
-        left:[36, 37.5, 38.5, 39.5,40.5,41.5,42.5,43.5,44.5,45.5],
-        height:[90, 86, 75, 71, 63, 55, 47, 41, 35, 28],       
-        width:[97, 91, 84, 77, 70, 61, 54, 46, 39, 32],       //width = 0.9height
-        path: "/img/car-left.png", //img path
+        top: [74, 70, 66, 62, 58, 54, 50, 46, 42, 38], 
+        left:[36.5, 37.5, 38.5,39.5,40.5,41.5,42.5,43.5,44.5,45.5],
+        path:{
+            car: "/img/car-left.png",
+            truck:"/img/truck-left.png",
+            moto: "/img/moto-left.png",
+            human: "img/human.png"
+            //add new object path
+        }
     },
     rightLane:{
-        top: [64, 61, 58, 55, 52, 49, 46, 43, 40, 37],
-        left:[64, 62.5, 61.5, 60.5, 59.5, 58.5, 57.5, 56.5, 55.5, 54.5],
-        height:[90, 86, 75, 71, 63, 55, 47, 41, 35, 28],       
-        width:[97, 91, 84, 77, 70, 61, 54, 46, 39, 32],       //width = 0.9height
-        path: "/img/car-right.png", //img path
+        top: [74, 70, 66, 62, 58, 54, 50, 46, 42, 38], 
+        left:[63.5, 62.5, 61.5, 60.5, 59.5, 58.5, 57.5, 56.5, 55.5, 54.5],  
+        path:{
+            car: "/img/car-right.png",
+            truck:"/img/truck-right.png",
+            moto: "/img/moto-right.png",
+            human: "img/human.png"
+            //add new object path
+        }
+    },
+    class:{
+        car:{
+            height:resizeObjectHeight(carHeight),       
+            width:resizeObjectWidth(carWidth)
+            
+        },
+        truck:{
+            height:resizeObjectHeight(truckHeight),       
+            width:resizeObjectWidth(truckWidth)
+            
+        },
+        moto:{
+            height:resizeObjectHeight(motoHeight),       
+            width:resizeObjectWidth(motoWidth)       
+        },
+        human:{
+            height: resizeObjectHeight(humanHeight),
+            width: resizeObjectWidth(humanWidth)
+        }
+
+        //add new object height and width
     }
 };
 
-var truckObject ={
-    midLane:{
-        top: [62, 59, 56, 53, 50, 47, 44, 41, 38, 35], 
-        left:50,
-        height:[131, 119, 108, 98, 89, 81, 74, 67, 61, 56],
-        width:[104, 94, 86, 78, 71, 64, 58, 53, 47, 42],
-        path:"/img/truck-mid.png"
-    },
-    leftLane:{
-        top: [62, 59, 56, 53, 50, 47, 44, 41, 38, 35], 
-        left:[36, 37.5, 38.5, 39.5,40.5,41.5,42.5,43.5,44.5,45.5],
-        height:[131, 119, 108, 98, 89, 81, 74, 67, 61, 56],
-        width:[104, 94, 86, 78, 71, 64, 58, 53, 47, 42],
-        path:"/img/truck-left.png"
-    },
-    rightLane:{
-        top: [62, 59, 56, 53, 50, 47, 44, 41, 38, 35], 
-        left:[64, 62.5, 61.5, 60.5, 59.5, 58.5, 57.5, 56.5, 55.5, 54.5],
-        height:[131, 119, 108, 98, 89, 81, 74, 67, 61, 56],
-        width:[104, 94, 86, 78, 71, 64, 58, 53, 47, 42],
-        path:"/img/truck-right.png"
+function resizeObjectHeight(height) {
+    var result = [height];
+  
+    for (var i = 1; i < 10; i++) {
+      var previousElement = result[i - 1];
+      var nextElement = previousElement * 0.9;
+      result.push(nextElement);
     }
-};
-let i = 1;
-var motoObject ={
-    midLane:{
-        top: [65, 63, 60, 56, 53, 50, 47, 43, 40, 37], 
-        left:50,
-        height:[74, 67, 61, 56, 51, 46, 42, 38, 35, 32],
-        width:[50, 45, 41, 37, 33, 30, 27, 24, 22, 20],
-        path:"/img/moto-mid.png"
-    },
-    leftLane:{
-        top: [66, 63, 60, 56, 53, 50, 47, 43, 40, 37], 
-        left:[36, 37.5, 38.5, 39.5,40.5,41.5,42.5,43.5,44.5,45.5],
-        height:[74, 67, 61, 56, 51, 46, 42, 38, 35, 32],
-        width:[50, 45, 41, 37, 33, 30, 27, 24, 22, 20],
-        path:"/img/moto-left.png"
-    },
-    rightLane:{
-        top: [65, 63, 60, 56, 53, 50, 47, 43, 40, 37], 
-        left:[64, 62.5, 61.5, 60.5, 59.5, 58.5, 57.5, 56.5, 55.5, 54.5],
-        height:[74, 67, 61, 56, 51, 46, 42, 38, 35, 32],
-        width:[50, 45, 41, 37, 33, 30, 27, 24, 22, 20],
-        path:"/img/moto-right.png"
+  
+    return result;
+}
+function resizeObjectWidth(width) {
+    var result = [width];
+  
+    for (var i = 1; i < 10; i++) {
+      var previousElement = result[i - 1];
+      var nextElement = previousElement * 0.9;
+      result.push(nextElement);
     }
-};
-var personObject ={
-    midLane:{
-        top: [], 
-        left:[],
-        height:[],
-        width:[],
-        path:''
-    },
-    leftLane:{
-        top: [], 
-        left:[],
-        height:[],
-        width:[],
-        path:''
-    },
-    rightLane:{
-        top: [], 
-        left:[],
-        height:[],
-        width:[],
-        path:''
-    }
-};
-
-
-
-//testing purpose============
-
-// let a = 7;
-// updateObject('truck',a,'left');
-// updateObject('truck',a,'mid');
-
-//testing purpose============
+  
+    return result;
+}
+  
 
 function updateMidLaneObject(obj,dis) {
     if (midLaneIsExist == 0)
     {
-        mid_lane.src = obj.midLane.path;
-        mid_lane.style.top       = obj.midLane.top[dis]+ '%';
-        mid_lane.style.left      = obj.midLane.left+ '%';
-        mid_lane.style.height    = obj.midLane.height[dis] + 'px';
-        mid_lane.style.width     = obj.midLane.width[dis] + 'px';
-        mid_lane.style.transform = 'translate(-50%,-50%)';
-        mid_lane.style.zIndex = '1';
+        mid_lane.style.display = 'block';
+        mid_lane.src = CAMObject.midLane.path[obj];
+        mid_lane.style.top       = CAMObject.midLane.top[dis]+ '%';
+        mid_lane.style.left      = CAMObject.midLane.left[dis]+ '%';
+        mid_lane.style.height    = CAMObject.class[obj].height[dis] + 'px';
+        mid_lane.style.width     = CAMObject.class[obj].width[dis] + 'px';
+        mid_lane.style.transform = 'translate(-50%,-100%)';
+        mid_lane.style.zIndex = '0';
         midLaneIsExist = 1;
     }
     else{
-        mid_lane_1.src = obj.midLane.path;
-        mid_lane_1.style.top       = obj.midLane.top[dis]+ '%';
-        mid_lane_1.style.left      = obj.midLane.left+ '%';
-        mid_lane_1.style.height    = obj.midLane.height[dis] + 'px';
-        mid_lane_1.style.width     = obj.midLane.width[dis] + 'px';
-        mid_lane_1.style.transform = 'translate(-50%,-50%)';
-        mid_lane_1.style.zIndex = '0';
+        mid_lane_1.style.display = 'block';
+        mid_lane_1.src = CAMObject.midLane.path[obj];
+        mid_lane_1.style.top       = CAMObject.midLane.top[dis]+ '%';
+        mid_lane_1.style.left      = CAMObject.midLane.left[dis]+ '%';
+        mid_lane_1.style.height    = CAMObject.class[obj].height[dis] + 'px';
+        mid_lane_1.style.width     = CAMObject.class[obj].width[dis] + 'px';
+        mid_lane_1.style.transform = 'translate(-50%,-100%)';      
+        mid_lane_1.style.zIndex = '1';
         midLaneIsExist = 0;
     }      
         console.log("Update object MidLane successfully!");
@@ -145,25 +157,28 @@ function updateMidLaneObject(obj,dis) {
 function updateLeftLaneObject(obj,dis) {
     if (leftLaneIsExist == 0)
     {
-        left_lane.src = obj.leftLane.path;
-        left_lane.style.top       = obj.leftLane.top[dis]+ '%';
-        left_lane.style.left      = obj.leftLane.left[dis]+ '%';
-        left_lane.style.height    = obj.leftLane.height[dis] + 'px';
-        left_lane.style.width     = obj.leftLane.width[dis] + 'px';
-        left_lane.style.transform = 'translate(-50%,-50%)';
-        left_lane.style.zIndex = '1';
+        left_lane.style.display = 'block';
+        left_lane.src = CAMObject.leftLane.path[obj];
+        left_lane.style.top       = CAMObject.leftLane.top[dis]+ '%';
+        left_lane.style.left      = CAMObject.leftLane.left[dis]+ '%';
+        left_lane.style.height    = CAMObject.class[obj].height[dis] + 'px';
+        left_lane.style.width     = CAMObject.class[obj].width[dis] + 'px';
+        left_lane.style.transform = 'translate(-50%,-100%)';
+
+        left_lane.style.zIndex = '0';
         leftLaneIsExist = 1;
 
     }
     else
     {
-        left_lane_1.src = obj.leftLane.path;
-        left_lane_1.style.top       = obj.leftLane.top[dis]+ '%';
-        left_lane_1.style.left      = obj.leftLane.left[dis]+ '%';
-        left_lane_1.style.height    = obj.leftLane.height[dis] + 'px';
-        left_lane_1.style.width     = obj.leftLane.width[dis] + 'px';
-        left_lane_1.style.transform = 'translate(-50%,-50%)';
-        left_lane_1.style.zIndex = '0';
+        left_lane_1.style.display = 'block';
+        left_lane_1.src = CAMObject.leftLane.path[obj];
+        left_lane_1.style.top       = CAMObject.leftLane.top[dis]+ '%';
+        left_lane_1.style.left      = CAMObject.leftLane.left[dis]+ '%';
+        left_lane_1.style.height    = CAMObject.class[obj].height[dis] + 'px';
+        left_lane_1.style.width     = CAMObject.class[obj].width[dis] + 'px';
+        left_lane_1.style.transform = 'translate(-50%,-100%)';
+        left_lane_1.style.zIndex = '1';
         leftLaneIsExist = 0;
     }
         
@@ -172,25 +187,27 @@ function updateLeftLaneObject(obj,dis) {
 function updateRightLaneObject(obj,dis) {
     if (rightLaneIsExist == 0)
     {
-        right_lane.src = obj.rightLane.path;
-        right_lane.style.top       = obj.rightLane.top[dis]+ '%';
-        right_lane.style.left      = obj.rightLane.left[dis]+ '%';
-        right_lane.style.height    = obj.rightLane.height[dis] + 'px';
-        right_lane.style.width     = obj.rightLane.width[dis] + 'px';
-        right_lane.style.transform = 'translate(-50%,-50%)';
-        right_lane.style.zIndex = '1';
+        right_lane.style.display = 'block';
+        right_lane.src = CAMObject.rightLane.path[obj];
+        right_lane.style.top       = CAMObject.rightLane.top[dis]+ '%';
+        right_lane.style.left      = CAMObject.rightLane.left[dis]+ '%';
+        right_lane.style.height    = CAMObject.class[obj].height[dis] + 'px';
+        right_lane.style.width     = CAMObject.class[obj].width[dis] + 'px';
+        right_lane.style.transform = 'translate(-50%,-100%)';
+        right_lane.style.zIndex = '0';
         rightLaneIsExist = 1;
 
     }
     else
     {
-        right_lane_1.src = obj.rightLane.path;
-        right_lane_1.style.top       = obj.rightLane.top[dis]+ '%';
-        right_lane_1.style.left      = obj.rightLane.left[dis]+ '%';
-        right_lane_1.style.height    = obj.rightLane.height[dis] + 'px';
-        right_lane_1.style.width     = obj.rightLane.width[dis] + 'px';
-        right_lane_1.style.transform = 'translate(-50%,-50%)';
-        right_lane_1.style.zIndex = '0';
+        right_lane_1.style.display = 'block';
+        right_lane_1.src = CAMObject.rightLane.path[obj];
+        right_lane_1.style.top       = CAMObject.rightLane.top[dis]+ '%';
+        right_lane_1.style.left      = CAMObject.rightLane.left[dis]+ '%';
+        right_lane_1.style.height    = CAMObject.class[obj].height[dis] + 'px';
+        right_lane_1.style.width     = CAMObject.class[obj].width[dis] + 'px';
+        right_lane_1.style.transform = 'translate(-50%,-100%)';
+        right_lane_1.style.zIndex = '1';
         rightLaneIsExist = 0;
     }
         
@@ -199,56 +216,141 @@ function updateRightLaneObject(obj,dis) {
 
 
 function checkObject(obj){
-    if (obj == 'car'){
-        selectedObject = carObject;
-    }
-    else if (obj == 'truck'){
-        selectedObject = truckObject;
-    }
-    else if (obj == 'moto'){
-        selectedObject = motoObject;
-    }
-    else {
-        selectedObject = personObject;
-    }
+
+switch (obj) {
+  case car:
+    selectedObject = 'car';
+    break;
+  case truck:
+    selectedObject = 'truck';
+    break;
+  case moto:
+    selectedObject = 'moto';
+    break;
+  case human:
+    selectedObject = 'human';
+    break;
+  default:
+    break;
+}
+
     return selectedObject;
 }
+
+
+//The object must be sort (ascending) before display
 function updateObject(obj, dis, position) {
-    
     selectedObject = checkObject(obj);
-    if (position == 'mid')
+    if (position == mid)
     {
         updateMidLaneObject(selectedObject,dis);
     }
-    else if( position == 'left')
+    else if( position == left)
     {
         updateLeftLaneObject(selectedObject,dis);
     }
-    else if(position == 'right')
+    else if(position == right)
     {
         updateRightLaneObject(selectedObject,dis);
     }
 }
+function clearAllObject(){
+    mid_lane.style.display = 'none';
+    mid_lane_1.style.display = 'none';
+    left_lane.style.display = 'none';
+    left_lane_1.style.display = 'none';
+    right_lane.style.display = 'none';
+    right_lane_1.style.display = 'none';
+}
+function updateLaneDetection(position, color){
+    switch(color){
+        case none:
+            left_line.style.display = 'none';
+            right_line.style.display = 'none';
+            break;
+            
+        case blue:
+            selectedColor =  'linear-gradient(to right, rgba(7, 219, 247, 0) 0%, rgba(7, 219, 247, 0.5) 50%, rgba(7, 219, 247, 0.5) 90%, rgba(7, 219, 247, 1) 100%)';
+            if (position == leftLine){
+                left_line.style.display = 'block';
+                left_line.style.background = selectedColor;
+            }
+            else {
+                right_line.style.display = 'block';
+                right_line.style.background = selectedColor;
+            }
+            break;
+        case yellow:
+            selectedColor = 'linear-gradient(to right, rgba(247, 243, 7, 0) 0%, rgba(247, 243, 7, 0.5) 50%, rgba(247, 243, 7, 0.5) 90%, rgba(247, 243, 7, 1) 100%)'
+            if (position == leftLine){
+                left_line.style.display = 'block';
+                left_line.style.background = selectedColor;
+            }
+            else {
+                right_line.style.display = 'block';
+                right_line.style.background = selectedColor;
+            }
+            break;
+        case red:
+            selectedColor = 'linear-gradient(to right, rgba(247, 7, 7, 0) 0%, rgba(247, 7, 7, 0.5) 50%, rgba(247, 7, 7, 0.5) 90%, rgba(247, 7, 7, 1) 100%)';
+            if (position == leftLine){
+                left_line.style.display = 'block';
+                left_line.style.background = selectedColor;
+            }
+            else {
+                right_line.style.display = 'block';
+                right_line.style.background = selectedColor;
+            }
+            break;
 
-
-//testing purpose============
-
-function test(){
-    midLaneIsExist = 0;
-    leftLaneIsExist = 0;
-    rightLaneIsExist = 0;
-    updateObject('car',i,'mid');
-    updateObject('moto', i,'left');
-    updateObject('moto', i,'right');
-    
-    console.log(i);
-    i++;
-    if (i ==10)
-    {
-        i = 0;
+            
     }
 }
-test();
 //testing purpose============
+// let i =0;
+// // function test(){
+// //     midLaneIsExist = 0;
+// //     leftLaneIsExist = 0;
+// //     rightLaneIsExist = 0;
+// //     updateObject(human,i,mid);
+// //     updateObject(car,i,left);
+// //     updateObject(moto,i,right);
+
+// //     i++;
+// //     if (i ==10)
+// //     {
+// //         i = 0;
+// //     }
+// // }
+
+
+//The object must be sort (ascending) before display
+
+function test(){
+    clearAllObject();
+    var i = Math.floor(Math.random() * 10); //random 1-9 for distance
+    var j = Math.floor(Math.random() * 10); //random 1-9 for distance
+    var k = Math.floor(Math.random() * 10); //random 1-9 for distance
+    var l = Math.floor(Math.random() * 10); //random 1-9 for distance
+    var m = Math.floor(Math.random() * 10); //random 1-9 for distance
+    var n = Math.floor(Math.random() * 10); //random 1-9 for distance
+    
+    
+    var e = Math.floor(Math.random() * 4); //random 0-3 for object
+    var f = Math.floor(Math.random() * 4); //random 0-3 for object
+    var g = Math.floor(Math.random() * 4); //random 0-3 for object
+    updateObject(e,i,0);
+    updateObject(f,j,1);
+    updateObject(g,k,2); 
+    updateObject(e,l,0);
+    updateObject(f,m,1);
+    updateObject(g,n,2);
+
+    updateLaneDetection(rightLine, blue);
+    updateLaneDetection(leftLine, blue);
+}
+const intervald = setInterval(test, 1000);
+
+
 
 

@@ -1,0 +1,5 @@
+car object: https://sketchfab.com/3d-models/honda-logo-a9350e54190b4be9ba4c29e8498f02fb
+motorbike object: https://sketchfab.com/3d-models/3drt-biker-01-f949a2d5e1034064817f9e02dc024b87
+truck: https://sketchfab.com/3d-models/truck-textured-33aa8c127c4b42eabe3bf4c80d97ab05
+
+//The object must be sort (ascending) before display
