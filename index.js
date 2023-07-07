@@ -339,6 +339,9 @@ function test(){
     var e = Math.floor(Math.random() * 4); //random 0-3 for object
     var f = Math.floor(Math.random() * 4); //random 0-3 for object
     var g = Math.floor(Math.random() * 4); //random 0-3 for object
+    var a = Math.floor(Math.random() * 4); //random 0-3 for Line
+    var b = Math.floor(Math.random() * 4); //random 0-3 for Line
+
     updateObject(e,i,0);
     updateObject(f,j,1);
     updateObject(g,k,2); 
@@ -346,8 +349,8 @@ function test(){
     updateObject(f,m,1);
     updateObject(g,n,2);
 
-    updateLaneDetection(rightLine, blue);
-    updateLaneDetection(leftLine, blue);
+    updateLaneDetection(rightLine, a);
+    updateLaneDetection(leftLine, b);
 }
 const intervald = setInterval(test, 1000);
 
